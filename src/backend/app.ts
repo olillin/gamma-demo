@@ -2,6 +2,7 @@ import express from 'express'
 import fs from 'fs'
 import http from 'http'
 import https from 'https'
+import { AuthorizationCode } from 'simple-oauth2'
 
 // Environment variables
 interface EnvironmentVariables {
@@ -42,23 +43,24 @@ if (fs.existsSync(PUBLIC_DIRECTORY)) {
     console.warn('WARNING: No public directory')
 }
 
-function getToken(code: string) {
-    return new Promise((resolve, reject) => {
-        const url =
-            `https://auth.chalmers.it/oauth2/token` + //
-            `?code=${code}` +
-            // `&scope=openid profile` +
-            `&grant_type=authorization_code` +
-            `&client_id=${ENVIRONMENT.CLIENT_ID}` +
-            `&client_secret=${ENVIRONMENT.CLIENT_SECRET}` +
-            `&redirect_uri=${ENVIRONMENT.REDIRECT_URI}`
-
-        fetch(url, {
-            method: 'POST',
-        })
-            .then(res => res.text())
-            .then(resolve)
+async function getToken(code: string) {
+    const client = new AuthorizationCode({
+        client: {
+            id: ENVIRONMENT.CLIENT_ID,
+            secret: ENVIRONMENT.CLIENT_SECRET,
+        },
+        auth: {
+            tokenHost: 'https://auth.chalmers.it/oauth2/token',
+        },
     })
+
+    const tokenParams = {
+        code: code,
+        redirect_uri: ENVIRONMENT.REDIRECT_URI,
+        scope: ['openid', 'profile'],
+    }
+
+    return client.getToken(tokenParams)
 }
 
 app.get('/env', (req, res) => {
@@ -72,8 +74,15 @@ app.get('/profile', async (req, res) => {
         return
     }
 
-    const token = await getToken(code.toString())
-    console.log(`Token: ${token}`)
+    var token
+    try {
+        token = await getToken(code.toString())
+        console.log(`Token: ${token}`)
+    } catch (error) {
+        console.error(`Failed to get access token ${error}`)
+        res.status(500).end('Failed to get access token')
+        return
+    }
 
     fetch('https://auth.chalmers.it/oauth2/userinfo', {
         headers: {
