@@ -50,7 +50,8 @@ async function getToken(code: string) {
             secret: ENVIRONMENT.CLIENT_SECRET,
         },
         auth: {
-            tokenHost: 'https://auth.chalmers.it/oauth2/token',
+            tokenHost: 'https://auth.chalmers.it',
+            tokenPath: '/oauth2/token',
         },
     })
 
@@ -58,6 +59,7 @@ async function getToken(code: string) {
         code: code,
         redirect_uri: ENVIRONMENT.REDIRECT_URI,
         scope: ['openid', 'profile'],
+        grant_type: 'authorization_code',
     }
 
     return client.getToken(tokenParams)
@@ -89,7 +91,7 @@ app.get('/profile', async (req, res) => {
             Authorization: `Bearer ${token}`,
         },
     })
-        .then(res => res.json())
+        .then(response => response.json())
         .then(res.json)
 })
 
