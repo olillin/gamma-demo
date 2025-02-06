@@ -76,10 +76,11 @@ app.get('/profile', async (req, res) => {
         return
     }
 
-    var token
+    var accessToken
     try {
-        token = await getToken(code.toString())
-        console.log(`Token: ${token}`)
+        const token = await getToken(code.toString())
+        console.log(`Token: ${JSON.stringify(token)}`)
+        accessToken = token.token.access_token
     } catch (error) {
         console.error(`Failed to get access token ${error}`)
         res.status(500).end('Failed to get access token')
@@ -88,7 +89,7 @@ app.get('/profile', async (req, res) => {
 
     fetch('https://auth.chalmers.it/oauth2/userinfo', {
         headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${accessToken}`,
         },
     })
         .then(response => response.json())
