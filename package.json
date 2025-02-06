@@ -10,6 +10,7 @@
     "buildFrontend": "tsc --project tsconfig.frontend.json && npm run copyPublic && rimraf --glob ./dist/**/*.ts",
     "copyPublic": "node -e \"require('fs').cpSync('./src/frontend', './dist/public', {recursive: true});\"",
     "start": "cd dist && node app.js",
+    "startenv": "cd dist && node --env-file=../.env app.js",
     "test": "jest"
   },
   "repository": {
