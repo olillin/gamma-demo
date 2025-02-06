@@ -80,7 +80,7 @@ app.get('/profile', async (req, res) => {
     try {
         const token = await getToken(code.toString())
         console.log(`Token: ${JSON.stringify(token)}`)
-        accessToken = (token as any).access_token
+        accessToken = token.token.access_token as string
     } catch (error) {
         console.error(`Failed to get access token ${error}`)
         res.status(500).json({ error: 'Failed to get access token' })
@@ -93,7 +93,7 @@ app.get('/profile', async (req, res) => {
         },
     })
         .then(response => response.json())
-        .then(res.json)
+        .then(json => res.json(json))
 })
 
 // Start server

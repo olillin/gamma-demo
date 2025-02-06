@@ -1,5 +1,8 @@
 const login = document.getElementById('login') as HTMLAnchorElement
 const profile = document.getElementById('profile') as HTMLDivElement
+const profileRaw = document.getElementById('profileRaw') as HTMLPreElement
+const profilePicture = document.getElementById('profilePicture') as HTMLImageElement
+const profileName = document.getElementById('profileName') as HTMLHeadingElement
 
 function showLogin() {
     fetch('/env')
@@ -15,7 +18,7 @@ function removeLogin() {
 }
 
 function showProfile(code: string) {
-    profile.style.display = 'auto'
+    profile.style.display = 'block'
     fetch(`/profile?code=${code}`).then(async res => {
         if (!res.ok) {
             try {
@@ -28,7 +31,9 @@ function showProfile(code: string) {
         }
 
         const profileData = await res.json()
-        profile.innerHTML = JSON.stringify(profileData)
+        profileName.innerText = profileData.name
+        profilePicture.src = profileData.picture
+        profileRaw.innerHTML = JSON.stringify(profileData, null, '  ')
     })
 }
 
