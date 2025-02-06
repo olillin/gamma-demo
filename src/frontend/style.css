@@ -1,0 +1,30 @@
+body {
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    background-color: #d1fcff;
+    font-family: sans-serif;
+}
+
+.profile {
+    max-width: 60vw;
+    width: 40em;
+    margin: auto;
+}
+
+.profile > * {
+    width: 100%;
+}
+
+.profile > img {
+    width: 50%;
+    border-radius: 1em;
+}
+
+.profile > pre {
+    background-color: #222;
+    border-radius: 1em;
+    color: white;
+    padding: 1em;
+    min-width: fit-content;
+}
