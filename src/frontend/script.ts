@@ -3,6 +3,7 @@ const profile = document.getElementById('profile') as HTMLDivElement
 const profileRaw = document.getElementById('profileRaw') as HTMLPreElement
 const profilePicture = document.getElementById('profilePicture') as HTMLImageElement
 const profileName = document.getElementById('profileName') as HTMLHeadingElement
+const groupsList = document.getElementById('groups') as HTMLUListElement
 
 function showLogin() {
     fetch('/env')
@@ -34,6 +35,12 @@ function showProfile(code: string) {
         profileName.innerText = profileData.name
         profilePicture.src = profileData.picture
         profileRaw.innerHTML = JSON.stringify(profileData, null, '  ')
+
+        // Groups
+        profileData.groups.forEach(group => {
+            const item = document.createElement('li')
+            item.innerText = `${group.prettyName} : ${group.superGroup.prettyName}`
+        })
     })
 }
 

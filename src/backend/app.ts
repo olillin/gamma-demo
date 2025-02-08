@@ -10,6 +10,8 @@ interface EnvironmentVariables {
     CLIENT_ID: string
     CLIENT_SECRET: string
     REDIRECT_URI: string
+    API_KEY?: string
+    PRE_SHARED_AUTH: string
 }
 
 // Remove 'optional' attributes from a type's properties
@@ -21,7 +23,7 @@ const DEFAULT_ENVIRONMENT: Partial<Concrete<EnvironmentVariables>> = {
     PORT: 8080,
 }
 
-const requiredEnvironment: (keyof EnvironmentVariables)[] = ['CLIENT_ID', 'CLIENT_SECRET', 'REDIRECT_URI']
+const requiredEnvironment: (keyof EnvironmentVariables)[] = ['CLIENT_ID', 'CLIENT_SECRET', 'REDIRECT_URI', 'PRE_SHARED_AUTH']
 requiredEnvironment.forEach(required => {
     if (!(required in process.env)) {
         console.error(`Missing required environment variable: ${required}`)
@@ -93,7 +95,13 @@ app.get('/profile', async (req, res) => {
         },
     })
         .then(response => response.json())
-        .then(json => res.json(json))
+        .then(async profile => {
+            const groups = await fetch('https://auth.chalmers.it/api/client/v1/').then(response => response.json())
+            res.json({
+                profile: profile,
+                groups: groups,
+            })
+        })
 })
 
 // Start server
