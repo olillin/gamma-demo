@@ -10,6 +10,7 @@ function removeLogin() {
 }
 
 function showProfile(code: string) {
+    document.body.style.justifyContent = 'flex-start'
     profile.style.display = 'block'
     fetch(`/profile?code=${code}`).then(async res => {
         if (!res.ok) {
@@ -19,6 +20,12 @@ function showProfile(code: string) {
             } catch (error) {
                 profile.innerHTML = 'Could not load profile'
             }
+
+            const backButton = document.createElement('a')
+            backButton.href = '/'
+            backButton.innerText = 'Try again'
+            profile.appendChild(backButton)
+
             return
         }
 
@@ -31,7 +38,7 @@ function showProfile(code: string) {
         const groups: any[] = profileData.groups
         groups.forEach(group => {
             const item = document.createElement('li')
-            item.innerText = `${group.prettyName} : ${group.superGroup.prettyName}`
+            item.innerText = `${group.prettyName} (${group.superGroup.prettyName})`
             groupsList.appendChild(item)
         })
     })
