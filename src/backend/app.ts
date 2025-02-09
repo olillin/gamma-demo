@@ -81,7 +81,6 @@ app.get('/profile', async (req, res) => {
     var accessToken: string
     try {
         const token = await getToken(code.toString())
-        console.log(`Token: ${JSON.stringify(token)}`)
         accessToken = token.token.access_token as string
     } catch (error) {
         console.error(`Failed to get access token ${error}`)
@@ -95,12 +94,19 @@ app.get('/profile', async (req, res) => {
         },
     })
         .then(response => response.json())
-        .then(async profile => {
-            const groups = await fetch('https://auth.chalmers.it/api/client/v1/').then(response => response.json())
-            res.json({
-                profile: profile,
-                groups: groups,
+        .then(profile => {
+            fetch(`https://auth.chalmers.it/api/client/v1/groups/for/${profile.sub}`, {
+                headers: {
+                    Authorization: ENVIRONMENT.PRE_SHARED_AUTH,
+                },
             })
+                .then(response => response.json())
+                .then(groups => {
+                    res.json({
+                        profile: profile,
+                        groups: groups,
+                    })
+                })
         })
 })
 

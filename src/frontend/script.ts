@@ -32,14 +32,16 @@ function showProfile(code: string) {
         }
 
         const profileData = await res.json()
-        profileName.innerText = profileData.name
-        profilePicture.src = profileData.picture
+        profileName.innerText = profileData.profile.name
+        profilePicture.src = profileData.profile.picture
         profileRaw.innerHTML = JSON.stringify(profileData, null, '  ')
 
         // Groups
-        profileData.groups.forEach(group => {
+        const groups: any[] = profileData.groups
+        groups.forEach(group => {
             const item = document.createElement('li')
             item.innerText = `${group.prettyName} : ${group.superGroup.prettyName}`
+            groupsList.appendChild(item)
         })
     })
 }
